@@ -1,0 +1,479 @@
+.product-section {
+    background-color: #ffffff;
+    padding: 4rem 0;
+}
+
+.product-separator {
+    margin-top: 6rem;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 6rem;
+}
+
+.product-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+}
+
+/* Gallery Styles */
+.product-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.main-image-container {
+    position: relative;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.badge-best-seller {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: #1e360e;
+    /* Dark Green */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+.main-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.main-image:hover {
+    transform: scale(1.05);
+}
+
+.thumbnail-list {
+    display: flex;
+    gap: 1rem;
+}
+
+.thumbnail-item {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.thumbnail-item:hover {
+    border-color: #1e360e;
+}
+
+.thumbnail-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Details Styles */
+.product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.product-title {
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.product-price {
+    font-size: 2rem;
+    font-weight: 400;
+    color: #1a1a1a;
+}
+
+/* Size Selector */
+.size-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.size-selector .label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.size-options {
+    display: flex;
+    gap: 1rem;
+}
+
+.size-btn {
+    padding: 0.8rem 1.5rem;
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 80px;
+}
+
+.size-btn:hover {
+    border-color: #1e360e;
+}
+
+.size-btn.active {
+    background-color: #1e360e;
+    color: white;
+    border-color: #1e360e;
+}
+
+/* Action Row (Quantity + Add to Cart) */
+.action-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.quantity-selector button {
+    background: none;
+    border: none;
+    padding: 0.8rem 1.2rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #333;
+}
+
+.quantity-selector span {
+    padding: 0 1rem;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+}
+
+.add-to-cart-btn {
+    flex: 1;
+    background-color: #1e360e;
+    /* Dark Green */
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #142409;
+}
+
+/* Accordions */
+.accordions {
+    border-top: 1px solid #eee;
+    margin-top: 1rem;
+}
+
+.accordion-item {
+    border-bottom: 1px solid #eee;
+}
+
+.accordion-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 0;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e360e;
+    cursor: pointer;
+    text-align: left;
+}
+
+.accordion-icon {
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+.accordion-content {
+    padding-bottom: 1.5rem;
+    color: #555;
+    overflow: hidden;
+}
+
+.badge-best-seller {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: #1e360e;
+    /* Dark Green */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+.main-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.main-image:hover {
+    transform: scale(1.05);
+}
+
+.thumbnail-list {
+    display: flex;
+    gap: 1rem;
+}
+
+.thumbnail-item {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.thumbnail-item:hover {
+    border-color: #1e360e;
+}
+
+.thumbnail-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Details Styles */
+.product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.product-title {
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.product-price {
+    font-size: 2rem;
+    font-weight: 400;
+    color: #1a1a1a;
+}
+
+/* Size Selector */
+.size-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.size-selector .label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.size-options {
+    display: flex;
+    gap: 1rem;
+}
+
+.size-btn {
+    padding: 0.8rem 1.5rem;
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 80px;
+}
+
+.size-btn:hover {
+    border-color: #1e360e;
+}
+
+.size-btn.active {
+    background-color: #1e360e;
+    color: white;
+    border-color: #1e360e;
+}
+
+/* Action Row (Quantity + Add to Cart) */
+.action-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.quantity-selector button {
+    background: none;
+    border: none;
+    padding: 0.8rem 1.2rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #333;
+}
+
+.quantity-selector span {
+    padding: 0 1rem;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+}
+
+.add-to-cart-btn {
+    flex: 1;
+    background-color: #1e360e;
+    /* Dark Green */
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #142409;
+}
+
+/* Accordions */
+.accordions {
+    border-top: 1px solid #eee;
+    margin-top: 1rem;
+}
+
+.accordion-item {
+    border-bottom: 1px solid #eee;
+}
+
+.accordion-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 0;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e360e;
+    cursor: pointer;
+    text-align: left;
+}
+
+.accordion-icon {
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+.accordion-content {
+    padding-bottom: 1.5rem;
+    color: #555;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Direct Order Buttons */
+.direct-order-buttons {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.btn-messenger,
+.btn-call {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-decoration: none;
+    gap: 0.8rem;
+    transition: all 0.2s;
+}
+
+.btn-messenger {
+    background-color: #8B3A3A;
+    color: white;
+}
+
+.btn-messenger:hover {
+    opacity: 0.9;
+}
+
+.btn-call {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.btn-call:hover {
+    background-color: #f9f9f9;
+    border-color: #ccc;
+}
+
+@media (max-width: 768px) {
+    .product-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .action-row {
+        flex-direction: column;
+    }
+
+    .quantity-selector {
+        justify-content: space-between;
+    }
+}

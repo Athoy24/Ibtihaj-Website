@@ -1,0 +1,35 @@
+.brand-story {
+    background-color: #f4f4f4;
+    text-align: center;
+}
+
+.story-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.story-block h2 {
+    font-size: 2rem;
+    color: var(--color-secondary);
+    margin-bottom: 1rem;
+}
+
+.story-block p {
+    font-size: 1.1rem;
+    color: #444;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.story-divider {
+    height: 2px;
+    width: 100px;
+    background-color: var(--color-accent);
+    margin: 2rem auto;
+}
+
+@media (max-width: 768px) {
+    .story-block h2 {
+        font-size: 1.8rem;
+    }
+}
