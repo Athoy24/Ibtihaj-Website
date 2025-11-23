@@ -17,12 +17,19 @@
 }
 
 .navbar-logo {
-    font-family: var(--font-heading);
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--color-primary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+}
+
+.logo-image {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.logo-image:hover {
+    transform: scale(1.05);
 }
 
 .navbar-links {
@@ -80,6 +87,10 @@
 }
 
 @media (max-width: 768px) {
+    .logo-image {
+        height: 40px;
+    }
+
     .navbar-links {
         position: fixed;
         top: var(--header-height);

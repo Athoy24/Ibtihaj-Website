@@ -12,7 +12,7 @@ const Navbar = () => {
         <nav className="navbar">
             <div className="container navbar-container">
                 <Link to="/" className="navbar-logo">
-                    <span className="logo-text">Ibtihaj</span>
+                    <img src="/logo.png" alt="Ibtihaj" className="logo-image" />
                 </Link>
 
                 <div className={`navbar-links ${isMobileMenuOpen ? 'active' : ''}`}>
