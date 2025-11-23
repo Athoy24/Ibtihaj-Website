@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import emailjs from '@emailjs/browser';
+
 import './CheckoutForm.css';
 
 const CheckoutForm = () => {
@@ -64,38 +64,87 @@ const CheckoutForm = () => {
             status: 'Pending'
         };
 
-        // Prepare Email Template Params
-        // Note: You need to match these keys with your EmailJS template variables
-        const templateParams = {
-            order_id: orderId,
-            to_name: 'Admin', // Or the admin's name
-            from_name: formData.fullName,
-            customer_email: formData.email,
-            customer_phone: formData.phone,
-            customer_address: `${formData.address}, ${formData.city}, ${formData.postalCode}`,
-            order_items: cartItems.map(item => `${item.name} (${item.size}) x ${item.quantity} - ৳${item.price * item.quantity}`).join('\n'),
-            order_total: cartTotal,
-            special_instructions: formData.instructions || 'None'
-        };
+        // Format Message for Telegram/WhatsApp
+        const itemsList = cartItems.map(item => `- ${item.name} (${item.size}) x ${item.quantity}: ৳${item.price * item.quantity}`).join('\n');
+
+        const message = `
+📦 *New Order Received!*
+🆔 Order ID: \`${orderId}\`
+📅 Date: ${orderDetails.date}
+
+👤 *Customer Details:*
+Name: ${formData.fullName}
+Phone: ${formData.phone}
+Email: ${formData.email}
+Address: ${formData.address}, ${formData.city}, ${formData.postalCode}
+
+🛒 *Order Items:*
+${itemsList}
+
+💰 *Total Amount:* ৳${cartTotal}
+
+📝 *Instructions:*
+${formData.instructions || 'None'}
+        `.trim();
 
         try {
-            // Send Email
-            await emailjs.send(
-                import.meta.env.VITE_EMAILJS_SERVICE_ID,
-                import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-                templateParams,
-                import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-            );
+            // 1. Try sending to Telegram
+            const botToken = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+            const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID;
 
-            console.log('Order Email Sent Successfully');
+            if (botToken && chatId) {
+                const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    }),
+                });
 
-            // Clear Cart and Redirect
+                if (!response.ok) {
+                    throw new Error('Telegram API failed');
+                }
+                console.log('Order sent to Telegram successfully');
+            } else {
+                console.warn('Telegram credentials missing, skipping auto-send.');
+            }
+
+            // 2. Send to Google Sheets (Excel)
+            const sheetUrl = import.meta.env.VITE_GOOGLE_SHEET_URL;
+            if (sheetUrl) {
+                const sheetData = {
+                    orderId,
+                    date: orderDetails.date,
+                    customer: formData,
+                    itemsSummary: cartItems.map(item => `${item.name} (${item.size}) x ${item.quantity}`).join(', '),
+                    total: cartTotal
+                };
+
+                await fetch(sheetUrl, {
+                    method: 'POST',
+                    mode: 'no-cors', // Important for Google Apps Script
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(sheetData)
+                });
+                console.log('Order sent to Google Sheets successfully');
+            } else {
+                console.warn('Google Sheet URL missing, skipping sheet save.');
+            }
+
+            // 2. Clear Cart and Redirect
             clearCart();
-            navigate('/order-confirmation', { state: { order: orderDetails } });
+            // Pass the message to confirmation page in case we want to send via WhatsApp there
+            navigate('/order-confirmation', { state: { order: orderDetails, message } });
 
         } catch (error) {
-            console.error('Failed to send order email:', error);
-            alert('There was an issue placing your order. Please try again or contact us directly.');
+            console.error('Failed to process order:', error);
+            alert('There was an issue placing your order. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
