@@ -11,8 +11,23 @@ const CartSidebar = () => {
         cartItems,
         removeFromCart,
         updateQuantity,
-        cartTotal
+        cartTotal,
+        couponCode,
+        discount,
+        couponError,
+        applyCoupon,
+        removeCoupon,
+        cartSubtotal
     } = useCart();
+
+    const [inputCode, setInputCode] = React.useState('');
+
+    const handleApplyCoupon = () => {
+        if (inputCode.trim()) {
+            applyCoupon(inputCode);
+            setInputCode('');
+        }
+    };
 
     const navigate = useNavigate();
 
@@ -75,7 +90,37 @@ const CartSidebar = () => {
                     <div className="cart-footer">
                         <div className="cart-subtotal">
                             <span>Subtotal:</span>
+                            <span className="amount">৳ {cartSubtotal}</span>
+                        </div>
+
+                        {discount > 0 && (
+                            <div className="cart-discount">
+                                <span>Discount ({couponCode}):</span>
+                                <div className="discount-amount">
+                                    <span className="amount">-৳ {discount}</span>
+                                    <button onClick={removeCoupon} className="remove-coupon">
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="cart-total">
+                            <span>Total:</span>
                             <span className="amount">৳ {cartTotal}</span>
+                        </div>
+
+                        <div className="coupon-section">
+                            <div className="coupon-input-group">
+                                <input
+                                    type="text"
+                                    placeholder="Coupon Code"
+                                    value={inputCode}
+                                    onChange={(e) => setInputCode(e.target.value)}
+                                />
+                                <button onClick={handleApplyCoupon} className="btn-apply">Apply</button>
+                            </div>
+                            {couponError && <p className="coupon-error">{couponError}</p>}
                         </div>
                         <button onClick={handleCheckout} className="btn btn-primary checkout-btn">
                             Proceed to Checkout

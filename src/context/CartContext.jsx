@@ -11,6 +11,9 @@ export const CartProvider = ({ children }) => {
         return savedCart ? JSON.parse(savedCart) : [];
     });
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [couponCode, setCouponCode] = useState('');
+    const [discount, setDiscount] = useState(0);
+    const [couponError, setCouponError] = useState('');
 
     useEffect(() => {
         localStorage.setItem('ibtihaj_cart', JSON.stringify(cartItems));
@@ -49,9 +52,48 @@ export const CartProvider = ({ children }) => {
 
     const clearCart = () => {
         setCartItems([]);
+        setCouponCode('');
+        setDiscount(0);
+        setCouponError('');
     };
 
-    const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    const applyCoupon = (code) => {
+        setCouponError('');
+        const upperCode = code.toUpperCase();
+
+        if (upperCode === 'SAVE10') {
+            setCouponCode(upperCode);
+            // Discount will be calculated in cartTotal
+        } else if (upperCode === 'WELCOME50') {
+            setCouponCode(upperCode);
+        } else {
+            setCouponError('Invalid coupon code');
+            setCouponCode('');
+            setDiscount(0);
+        }
+    };
+
+    const removeCoupon = () => {
+        setCouponCode('');
+        setDiscount(0);
+        setCouponError('');
+    };
+
+    const cartSubtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+
+    let calculatedDiscount = 0;
+    if (couponCode === 'SAVE10') {
+        calculatedDiscount = Math.round(cartSubtotal * 0.1);
+    } else if (couponCode === 'WELCOME50') {
+        calculatedDiscount = 50;
+    }
+
+    // Ensure discount doesn't exceed subtotal
+    if (calculatedDiscount > cartSubtotal) {
+        calculatedDiscount = cartSubtotal;
+    }
+
+    const cartTotal = cartSubtotal - calculatedDiscount;
     const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
     return (
@@ -64,7 +106,13 @@ export const CartProvider = ({ children }) => {
             isCartOpen,
             setIsCartOpen,
             cartTotal,
-            cartCount
+            cartCount,
+            couponCode,
+            discount: calculatedDiscount,
+            couponError,
+            applyCoupon,
+            removeCoupon,
+            cartSubtotal
         }}>
             {children}
         </CartContext.Provider>

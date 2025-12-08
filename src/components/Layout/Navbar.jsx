@@ -16,9 +16,9 @@ const Navbar = () => {
                 </Link>
 
                 <div className={`navbar-links ${isMobileMenuOpen ? 'active' : ''}`}>
-                    <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Shop</Link>
-                    <a href="#reviews" onClick={() => setIsMobileMenuOpen(false)}>Reviews</a>
-                    <a href="#story" onClick={() => setIsMobileMenuOpen(false)}>Our Story</a>
+                    <Link to="/#shop" onClick={() => setIsMobileMenuOpen(false)}>Shop</Link>
+                    <Link to="/#reviews" onClick={() => setIsMobileMenuOpen(false)}>Reviews</Link>
+                    <Link to="/#story" onClick={() => setIsMobileMenuOpen(false)}>Our Story</Link>
                     <a href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
                 </div>
 

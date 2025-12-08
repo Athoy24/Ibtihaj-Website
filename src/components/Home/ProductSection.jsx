@@ -58,7 +58,12 @@ const ProductDisplay = ({ product }) => {
             {/* Right Column: Details */}
             <div className="product-details">
                 <h1 className="product-title">{product.name}</h1>
-                <p className="product-price">৳ {product.variants[selectedSize].price}</p>
+                <div className="price-container">
+                    {product.variants[selectedSize].originalPrice && (
+                        <span className="original-price">৳ {product.variants[selectedSize].originalPrice}</span>
+                    )}
+                    <span className="product-price">৳ {product.variants[selectedSize].price}</span>
+                </div>
 
                 <div className="size-selector">
                     <span className="label">Sizes</span>
@@ -130,8 +135,8 @@ const ProductSection = () => {
             description: 'Experience the exquisite taste of our Signature Flush Black Tea, a premium tea harvested during the first flush of the spring season in Sylhet, Bangladesh. This delicate tea offers a floral aroma and a complex flavor profile with notes of malt, briskness, and a hint of astringency. Its bright, coppery liquor is a delight to the senses, making it the perfect tea for any occasion. Enjoy it plain or with a splash of milk and sugar.',
             isBestSeller: true,
             variants: {
-                '200g': { price: 200, image: signature200gImg },
-                '500g': { price: 450, image: signature500gImg }
+                '200g': { price: 180, originalPrice: 199, image: signature200gImg },
+                '500g': { price: 450, originalPrice: 499, image: signature500gImg }
             },
             images: [
                 'https://placehold.co/600x800/8B3A3A/ffffff?text=Front+View',
@@ -145,8 +150,8 @@ const ProductSection = () => {
             description: 'Refresh your senses with our organic Green Tea, rich in antioxidants and pure flavor.',
             isBestSeller: false,
             variants: {
-                '100g': { price: 150, image: greenteaImg },
-                '250g': { price: 350, image: greenteaImg }
+                '100g': { price: 275, originalPrice: 300, image: greenteaImg },
+                '250g': { price: 599, originalPrice: 650, image: greenteaImg }
             },
             images: [
                 'https://placehold.co/600x800/4CAF50/ffffff?text=Green+Tea+Front',
