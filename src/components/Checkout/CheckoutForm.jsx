@@ -88,12 +88,15 @@ ${formData.instructions || 'None'}
         `.trim();
 
         try {
-            // 1. Try sending to Telegram
+            // 1. Prepare Promises for Telegram and Google Sheets
+            const promises = [];
+
+            // Telegram Promise
             const botToken = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
             const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID;
 
             if (botToken && chatId) {
-                const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                const telegramPromise = fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -103,17 +106,16 @@ ${formData.instructions || 'None'}
                         text: message,
                         parse_mode: 'Markdown'
                     }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Telegram API failed');
-                }
-                console.log('Order sent to Telegram successfully');
+                }).then(res => {
+                    if (!res.ok) throw new Error('Telegram API failed');
+                    console.log('Order sent to Telegram successfully');
+                }).catch(err => console.error('Telegram Error:', err));
+                promises.push(telegramPromise);
             } else {
                 console.warn('Telegram credentials missing, skipping auto-send.');
             }
 
-            // 2. Send to Google Sheets (Excel)
+            // Google Sheets Promise
             const sheetUrl = import.meta.env.VITE_GOOGLE_SHEET_URL;
             if (sheetUrl) {
                 const sheetData = {
@@ -124,18 +126,26 @@ ${formData.instructions || 'None'}
                     total: cartTotal
                 };
 
-                await fetch(sheetUrl, {
+                const sheetPromise = fetch(sheetUrl, {
                     method: 'POST',
                     mode: 'no-cors', // Important for Google Apps Script
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(sheetData)
-                });
-                console.log('Order sent to Google Sheets successfully');
+                }).then(() => {
+                    console.log('Order sent to Google Sheets successfully');
+                }).catch(err => console.error('Google Sheet Error:', err));
+                promises.push(sheetPromise);
             } else {
                 console.warn('Google Sheet URL missing, skipping sheet save.');
             }
+
+            // Execute in parallel with a timeout of 4 seconds
+            await Promise.race([
+                Promise.allSettled(promises),
+                new Promise(resolve => setTimeout(resolve, 4000))
+            ]);
 
             // 2. Clear Cart and Redirect
             clearCart();
