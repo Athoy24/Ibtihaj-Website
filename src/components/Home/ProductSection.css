@@ -1,0 +1,361 @@
+/* Tailwind CSS Utility Classes Mapped to Vanilla CSS */
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+.max-w-6xl {
+  max-width: 1152px;
+}
+
+.max-w-4xl {
+  max-width: 896px;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.w-auto {
+  width: auto;
+}
+
+.object-contain {
+  object-fit: contain;
+}
+
+.max-h-\[250px\] {
+  max-height: 250px;
+}
+
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Custom Styles for Refactored Product Section */
+.product-section {
+  background-color: var(--color-background, #f9f9f9);
+  padding: var(--spacing-xl, 4rem) 0;
+}
+
+.product-card {
+  background: var(--color-white, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--color-light-gray, #e5e5e5);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(45, 80, 22, 0.08);
+}
+
+/* Gallery inside Card */
+.product-card-gallery {
+  position: relative;
+  background-color: #fafafa;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #f3f3f3;
+}
+
+.main-image-container {
+  width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+.badge-best-seller {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background-color: var(--color-secondary, #2D5016);
+  color: white;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.main-image {
+  max-width: 100%;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* Info and Typography */
+.product-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: center;
+}
+
+.product-card-title {
+  font-family: var(--font-heading, 'Playfair Display', serif);
+  font-size: 1.5rem;
+  color: var(--color-secondary, #2D5016);
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Price Container */
+.price-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.original-price {
+  font-size: 1.1rem;
+  color: #999999;
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+.product-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary, #8B3A3A);
+}
+
+/* Features List */
+.product-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.5rem 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.product-features li {
+  font-size: 0.85rem;
+  color: #555555;
+  line-height: 1.4;
+}
+
+/* Size Selector */
+.size-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.size-selector .label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.size-options {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.size-btn {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid #ddd;
+  background: white;
+  color: #333;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.size-btn:hover {
+  border-color: var(--color-secondary, #2D5016);
+  color: var(--color-secondary, #2D5016);
+}
+
+.size-btn.active {
+  background-color: var(--color-secondary, #2D5016);
+  color: white;
+  border-color: var(--color-secondary, #2D5016);
+}
+
+/* Action Row */
+.action-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.quantity-selector button {
+  background: none;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #333;
+  font-weight: 600;
+}
+
+.quantity-selector span {
+  padding: 0 0.5rem;
+  font-weight: 600;
+  min-width: 30px;
+  text-align: center;
+}
+
+.add-to-cart-btn {
+  flex: 1;
+  background-color: var(--color-secondary, #2D5016);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  padding: 0.6rem;
+}
+
+.add-to-cart-btn:hover {
+  background-color: #1a300c;
+}
+
+/* Direct Order Buttons */
+.direct-order-buttons {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.direct-order-buttons .btn-messenger,
+.direct-order-buttons .btn-call {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 0.75rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.direct-order-buttons .btn-messenger {
+  background-color: var(--color-primary, #8B3A3A);
+  color: white;
+}
+
+.direct-order-buttons .btn-messenger:hover {
+  background-color: #6e2e2e;
+}
+
+.direct-order-buttons .btn-call {
+  background-color: white;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.direct-order-buttons .btn-call:hover {
+  background-color: #f9f9f9;
+  border-color: #bbb;
+}
+
+/* Shared Accordions Section */
+.shared-accordions {
+  margin-top: var(--spacing-xl, 4rem);
+  background-color: var(--color-white, #ffffff);
+  border-radius: 12px;
+  border: 1px solid var(--color-light-gray, #e5e5e5);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.02);
+  padding: 2rem;
+}
+
+.shared-accordions-title {
+  font-family: var(--font-heading, 'Playfair Display', serif);
+  font-size: 1.5rem;
+  color: var(--color-secondary, #2D5016);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid rgba(45, 80, 22, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.accordions {
+  border-top: 1px solid #eee;
+}
+
+.accordion-item {
+  border-bottom: 1px solid #eee;
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  background: none;
+  border: none;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-secondary, #2D5016);
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.accordion-header:hover {
+  color: var(--color-primary, #8B3A3A);
+}
+
+.accordion-icon {
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.accordion-content {
+  padding-bottom: 1.25rem;
+  color: #555555;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .direct-order-buttons {
+    flex-direction: column;
+  }
+}
