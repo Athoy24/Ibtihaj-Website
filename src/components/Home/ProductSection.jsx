@@ -41,7 +41,7 @@ const ProductCard = ({ product }) => {
             {/* Info and Purchase Controls */}
             <div className="product-card-info">
                 <h3 className="product-card-title">{product.name}</h3>
-                
+
                 <div className="price-container justify-center">
                     {product.variants[selectedSize].originalPrice && (
                         <span className="original-price">৳ {product.variants[selectedSize].originalPrice}</span>
@@ -115,7 +115,7 @@ const ProductSection = () => {
                 '🇧🇩 Sourced from high-altitude gardens of Sylhet'
             ],
             variants: {
-                '200g': { price: 250, originalPrice: 299, image: signature200gImg.src },
+                '200g': { price: 180, originalPrice: 199, image: signature200gImg.src },
                 '500g': { price: 450, originalPrice: 499, image: signature500gImg.src }
             }
         },
