@@ -12,6 +12,7 @@ const ProductCard = ({ product }) => {
     const [quantity, setQuantity] = useState(1);
 
     const handleAddToCart = () => {
+        if (product.isOutOfStock) return;
         addToCart(
             { id: product.id, name: product.name, image: product.variants[selectedSize].image },
             selectedSize,
@@ -21,13 +22,18 @@ const ProductCard = ({ product }) => {
     };
 
     return (
-        <div className="product-card">
+        <div className={`product-card ${product.isOutOfStock ? 'is-out-of-stock' : ''}`}>
             {/* Gallery / Image Container */}
             <div className="product-card-gallery">
                 <div className="main-image-container">
-                    {product.isBestSeller && (
+                    {product.isBestSeller && !product.isOutOfStock && (
                         <div className="badge-best-seller">
                             <span>✨ Best Seller ✨</span>
+                        </div>
+                    )}
+                    {product.isOutOfStock && (
+                        <div className="badge-out-of-stock">
+                            <span>Stocked Out</span>
                         </div>
                     )}
                     <img
@@ -43,10 +49,16 @@ const ProductCard = ({ product }) => {
                 <h3 className="product-card-title">{product.name}</h3>
 
                 <div className="price-container justify-center">
-                    {product.variants[selectedSize].originalPrice && (
-                        <span className="original-price">৳ {product.variants[selectedSize].originalPrice}</span>
+                    {product.isOutOfStock ? (
+                        <span className="out-of-stock-text">Stocked Out</span>
+                    ) : (
+                        <>
+                            {product.variants[selectedSize].originalPrice && (
+                                <span className="original-price">৳ {product.variants[selectedSize].originalPrice}</span>
+                            )}
+                            <span className="product-price">৳ {product.variants[selectedSize].price}</span>
+                        </>
                     )}
-                    <span className="product-price">৳ {product.variants[selectedSize].price}</span>
                 </div>
 
                 <ul className="product-features">
@@ -55,31 +67,41 @@ const ProductCard = ({ product }) => {
                     ))}
                 </ul>
 
-                <div className="size-selector">
-                    <span className="label">Select Size</span>
-                    <div className="size-options justify-center">
-                        {Object.keys(product.variants).map(size => (
-                            <button
-                                key={size}
-                                className={`size-btn ${selectedSize === size ? 'active' : ''}`}
-                                onClick={() => setSelectedSize(size)}
-                            >
-                                {size}
-                            </button>
-                        ))}
+                {product.isOutOfStock ? (
+                    <div className="action-row justify-center mt-4">
+                        <button className="out-of-stock-btn" disabled>
+                            Stocked Out
+                        </button>
                     </div>
-                </div>
+                ) : (
+                    <>
+                        <div className="size-selector">
+                            <span className="label">Select Size</span>
+                            <div className="size-options justify-center">
+                                {Object.keys(product.variants).map(size => (
+                                    <button
+                                        key={size}
+                                        className={`size-btn ${selectedSize === size ? 'active' : ''}`}
+                                        onClick={() => setSelectedSize(size)}
+                                    >
+                                        {size}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
 
-                <div className="action-row justify-center">
-                    <div className="quantity-selector">
-                        <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
-                        <span>{quantity}</span>
-                        <button onClick={() => setQuantity(quantity + 1)}>+</button>
-                    </div>
-                    <button className="btn btn-primary add-to-cart-btn" onClick={handleAddToCart}>
-                        Add To Cart
-                    </button>
-                </div>
+                        <div className="action-row justify-center">
+                            <div className="quantity-selector">
+                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                                <span>{quantity}</span>
+                                <button onClick={() => setQuantity(quantity + 1)}>+</button>
+                            </div>
+                            <button className="btn btn-primary add-to-cart-btn" onClick={handleAddToCart}>
+                                Add To Cart
+                            </button>
+                        </div>
+                    </>
+                )}
 
                 <div className="direct-order-buttons">
                     <a href="https://m.me/Ibtihaj.store" target="_blank" rel="noopener noreferrer" className="btn btn-messenger">
@@ -112,7 +134,7 @@ const ProductSection = () => {
             features: [
                 '🌸 Handpicked premium first-flush black tea',
                 '🍃 Exquisite floral aroma & complex flavor profile',
-                '🇧🇩 Sourced from high-altitude gardens of Sylhet'
+                '🌳 Sourced from top quality gardens of Sreemangal'
             ],
             variants: {
                 '200g': { price: 180, originalPrice: 199, image: signature200gImg.src },
@@ -122,6 +144,7 @@ const ProductSection = () => {
         {
             id: 'green-tea',
             name: 'Ibtihaj Premium Green Tea',
+            isOutOfStock: true,
             description: 'Refresh your senses with our organic Green Tea, rich in antioxidants and pure flavor. Handcrafted to preserve the highest quality of tea nutrients, it delivers a smooth taste and natural energy boost throughout your day.',
             isBestSeller: false,
             features: [
