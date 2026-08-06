@@ -28,17 +28,18 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem('ibtihaj_cart', JSON.stringify(cartItems));
     }, [cartItems]);
 
-    const addToCart = (product, size, price) => {
+    const addToCart = (product, size, price, quantityToAdd = 1) => {
+        const qty = typeof quantityToAdd === 'number' && quantityToAdd > 0 ? quantityToAdd : 1;
         setCartItems(prevItems => {
             const existingItem = prevItems.find(item => item.id === product.id && item.size === size);
             if (existingItem) {
                 return prevItems.map(item =>
                     item.id === product.id && item.size === size
-                        ? { ...item, quantity: item.quantity + 1 }
+                        ? { ...item, quantity: item.quantity + qty }
                         : item
                 );
             }
-            return [...prevItems, { ...product, size, price, quantity: 1, cartId: `${product.id}-${size}` }];
+            return [...prevItems, { ...product, size, price, quantity: qty, cartId: `${product.id}-${size}` }];
         });
         setIsCartOpen(true);
     };
