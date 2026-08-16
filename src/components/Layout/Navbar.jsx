@@ -33,7 +33,7 @@ const Navbar = () => {
                 </Link>
 
                 <div className={`navbar-links ${isMobileMenuOpen ? 'active' : ''}`}>
-                    <Link href="/#shop" onClick={() => setIsMobileMenuOpen(false)}>Shop</Link>
+                    <Link href="/#products" onClick={() => setIsMobileMenuOpen(false)}>Shop</Link>
                     <Link href="/#reviews" onClick={() => setIsMobileMenuOpen(false)}>Reviews</Link>
                     <Link href="/#story" onClick={() => setIsMobileMenuOpen(false)}>Our Story</Link>
                     <a href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
@@ -49,7 +49,14 @@ const Navbar = () => {
                         {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
                     </button>
 
-                    <Link href="/" className="btn btn-primary order-btn hidden-mobile">
+                    <Link 
+                        href="#products" 
+                        className="btn btn-primary order-btn hidden-mobile"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                    >
                         Order Now
                     </Link>
 

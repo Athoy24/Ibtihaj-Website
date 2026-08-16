@@ -3,7 +3,7 @@ import './Hero.css';
 
 const Hero = () => {
     const scrollToShop = () => {
-        const shopSection = document.getElementById('shop');
+        const shopSection = document.getElementById('products');
         if (shopSection) {
             shopSection.scrollIntoView({ behavior: 'smooth' });
         }

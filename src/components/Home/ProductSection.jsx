@@ -160,7 +160,7 @@ const ProductSection = () => {
     ];
 
     return (
-        <section className="product-section section-padding" id="shop">
+        <section className="product-section section-padding" id="products">
             <div className="container">
                 {/* 2-Column Responsive Grid Container */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">

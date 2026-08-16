@@ -1,5 +1,6 @@
 .navbar {
-    background-color: transparent;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
     position: fixed;
     top: 0;
     z-index: 100;
@@ -8,6 +9,7 @@
     align-items: center;
     width: 100%;
     transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
 .navbar.scrolled {
@@ -46,16 +48,16 @@
 .navbar-links a {
     font-weight: 500;
     font-size: 1rem;
-    color: var(--color-white);
+    color: #1a2e22;
     transition: color 0.3s ease;
 }
 
 .navbar.scrolled .navbar-links a {
-    color: var(--color-text);
+    color: #1a2e22;
 }
 
 .navbar-links a:hover {
-    color: var(--color-accent);
+    color: var(--color-primary);
 }
 
 .navbar.scrolled .navbar-links a:hover {
@@ -71,16 +73,16 @@
 .cart-btn {
     background: none;
     position: relative;
-    color: var(--color-white);
+    color: #1a2e22;
     transition: color 0.3s;
 }
 
 .navbar.scrolled .cart-btn {
-    color: var(--color-text);
+    color: #1a2e22;
 }
 
 .cart-btn:hover {
-    color: var(--color-accent);
+    color: var(--color-primary);
 }
 
 .navbar.scrolled .cart-btn:hover {
@@ -106,11 +108,11 @@
 .mobile-menu-btn {
     display: none;
     background: none;
-    color: var(--color-white);
+    color: #1a2e22;
 }
 
 .navbar.scrolled .mobile-menu-btn {
-    color: var(--color-text);
+    color: #1a2e22;
 }
 
 @media (max-width: 768px) {
