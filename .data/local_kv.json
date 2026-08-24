@@ -7,10 +7,6 @@
     "value": "{\"state\":\"SUCCEEDED\",\"hash\":\"4d998d44d6bbd8ac82896a54c7cf69517689dd7aecd002fb427530607bd63c73\",\"orderId\":\"ORD-2facf4a8-db13-405f-8910-eac065f31e50\"}",
     "expiresAt": 1787595986840
   },
-  "rate_limit:::1": {
-    "value": 5,
-    "expiresAt": 1787548328438
-  },
   "order:idemp:test-key-0.34685831421134894": {
     "value": "{\"state\":\"SUCCEEDED\",\"hash\":\"445c31eb3ca35fb037ee14ca10343fead7a67954d42f96621ec4b1b9080f5011\",\"orderId\":\"ORD-4cf3314b-eaf2-4d4d-9aef-f9da11b3d517\"}",
     "expiresAt": 1787634669923
@@ -22,5 +18,13 @@
   "order:idemp:test-key-0.011764673788172031": {
     "value": "{\"state\":\"SUCCEEDED\",\"hash\":\"445c31eb3ca35fb037ee14ca10343fead7a67954d42f96621ec4b1b9080f5011\",\"orderId\":\"ORD-5a5822af-a34d-475b-94a4-2cd5bb40e0ac\"}",
     "expiresAt": 1787634671332
+  },
+  "rate_limit:::1": {
+    "value": 1,
+    "expiresAt": 1787552316011
+  },
+  "order:idemp:c838a138-e39b-423b-8ac8-316023ef2588": {
+    "value": "{\"state\":\"SUCCEEDED\",\"hash\":\"a2b4ef30bccbaf924f93b43c99004911146ba3eeb99baa5ea5c81d9b5e5cfa17\",\"orderId\":\"ORD-f308932f-6c80-40a3-97b4-cb7a5a4a1693\"}",
+    "expiresAt": 1787638656898
   }
 }

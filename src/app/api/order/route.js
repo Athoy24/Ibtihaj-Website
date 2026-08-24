@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { calculateServerTotals } from '@/lib/catalog';
-import { kvSetNX, kvSet, kvIncr, kvExpire } from '@/lib/kv';
 import { headers } from 'next/headers';
 
 // Optional: honeypot config
@@ -16,27 +15,12 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Origin not allowed' }, { status: 403, headers: { 'Cache-Control': 'no-store' } });
         }
 
-        const clientIp = reqHeaders.get('x-forwarded-for')?.split(',')[0]?.trim() || reqHeaders.get('x-real-ip') || '127.0.0.1';
-        const rlKey = `rate_limit:${clientIp}`;
-        const currentRequests = await kvIncr(rlKey);
-        if (currentRequests === 1) {
-            await kvExpire(rlKey, 60); // 60 seconds TTL
-        }
-        if (currentRequests > 5) {
-            return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: { 'Cache-Control': 'no-store' } });
-        }
-
-
         const body = await req.json();
-        const { customer, items, idempotencyKey, honeypot } = body;
+        const { customer, items, honeypot } = body;
 
         // Bot Control (Honeypot)
         if (honeypot || (customer && customer[HONEYPOT_FIELD])) {
             return NextResponse.json({ error: 'Invalid request' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
-        }
-
-        if (!idempotencyKey) {
-            return NextResponse.json({ error: 'Missing idempotency key' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
         }
 
         if (!customer || !items) {
@@ -62,39 +46,6 @@ export async function POST(req) {
         customer.email = emailTrimmed || undefined;
         if (!customer.address || customer.address.length < 5 || customer.address.length > 200) {
             return NextResponse.json({ error: 'Invalid address' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
-        }
-
-        // Normalize payload hash to prevent same-key/different-payload attacks
-        const payloadString = JSON.stringify({
-            fullName: customer.fullName.trim(),
-            phone: customer.phone.trim(),
-            items: totals.validItems.map(i => `${i.id}-${i.size}-${i.quantity}`),
-            total: totals.grandTotal
-        });
-        const payloadHash = crypto.createHash('sha256').update(payloadString).digest('hex');
-        const redisKey = `order:idemp:${idempotencyKey}`;
-        
-        // Atomic create-if-absent (PENDING state)
-        const isNew = await kvSetNX(redisKey, JSON.stringify({ state: 'PENDING', hash: payloadHash }), 600);
-        if (!isNew) {
-            // Key already exists, this is a retry or duplicate
-            const existingRaw = await import('@/lib/kv').then(m => m.kvGet(redisKey));
-            if (existingRaw) {
-                const existing = JSON.parse(existingRaw);
-                if (existing.hash !== payloadHash) {
-                    return NextResponse.json({ error: 'Conflict: idempotency key reused with different payload' }, { status: 409, headers: { 'Cache-Control': 'no-store' } });
-                }
-                if (existing.state === 'PENDING') {
-                    return NextResponse.json({ error: 'Order is currently processing, please wait.' }, { status: 429, headers: { 'Cache-Control': 'no-store' } });
-                }
-                if (existing.state === 'FAILED') {
-                    return NextResponse.json({ error: 'Previous attempt failed. Please use a new checkout session.' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
-                }
-                if (existing.state === 'SUCCEEDED') {
-                    // Return original safe result without repeating services, issue a fresh cookie
-                    return issueConfirmationResponse(existing.orderId, totals.grandTotal, totals.validItems.length);
-                }
-            }
         }
 
         const orderId = `ORD-${crypto.randomUUID()}`;
@@ -182,14 +133,12 @@ ${customer.instructions || 'None'}
                 }).finally(() => clearTimeout(sheetTimeoutId));
             }
 
-            // Update KV to SUCCEEDED
-            await kvSet(redisKey, JSON.stringify({ state: 'SUCCEEDED', hash: payloadHash, orderId }), 86400);
-
-            return issueConfirmationResponse(orderId, totals.grandTotal, totals.validItems.length);
+            const response = NextResponse.json({ success: true, orderId });
+            response.headers.set('Cache-Control', 'no-store');
+            return response;
 
         } catch (error) {
             console.error('Order processing error:', error);
-            await kvSet(redisKey, JSON.stringify({ state: 'FAILED', hash: payloadHash }), 300);
             return NextResponse.json({ error: 'Order processing failed. Please try again.' }, { status: 500, headers: { 'Cache-Control': 'no-store' } });
         }
 
@@ -197,38 +146,4 @@ ${customer.instructions || 'None'}
         console.error('API generic error:', error);
         return NextResponse.json({ error: 'An unexpected error occurred.' }, { status: 500, headers: { 'Cache-Control': 'no-store' } });
     }
-}
-
-function issueConfirmationResponse(orderId, grandTotal, itemCount) {
-    const payloadObj = {
-        orderId,
-        summary: { total: grandTotal, itemCount },
-        issuedAt: Date.now(),
-        expiresAt: Date.now() + 300 * 1000, // 5 mins
-        purpose: "order-confirmation",
-        nonce: crypto.randomBytes(16).toString('hex')
-    };
-
-    const secret = process.env.ORDER_SECRET || 'fallback_secret_do_not_use_in_prod';
-    const hmac = crypto.createHmac('sha256', secret);
-    hmac.update(JSON.stringify(payloadObj));
-    const signature = hmac.digest('hex');
-
-    const cookieValue = Buffer.from(JSON.stringify({ payload: payloadObj, signature })).toString('base64');
-
-    const response = NextResponse.json({ success: true, orderId });
-    response.headers.set('Cache-Control', 'no-store');
-    
-    // Set strict confirmation cookie
-    response.cookies.set({
-        name: 'order_confirmation_context',
-        value: cookieValue,
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 300
-    });
-
-    return response;
 }
