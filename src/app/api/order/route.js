@@ -85,20 +85,24 @@ ${customer.instructions || 'None'}
                 throw new Error('Server configuration error');
             }
 
-            // Telegram as Primary
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s bounded timeout
-            
-            const telegramRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' }),
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
+            // Telegram as Primary (Non-blocking)
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s bounded timeout
+                
+                const telegramRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' }),
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
 
-            if (!telegramRes.ok) {
-                throw new Error('Primary system failed');
+                if (!telegramRes.ok) {
+                    console.error('Telegram integration failed:', telegramRes.statusText);
+                }
+            } catch (err) {
+                console.error('Telegram integration error:', err);
             }
 
             // Google Sheets as Secondary (do not await rejection to fail order)

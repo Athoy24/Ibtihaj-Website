@@ -9,10 +9,10 @@ export const PRODUCT_CATALOG = {
     },
     'green-tea': {
         name: 'Ibtihaj Premium Green Tea',
-        isOutOfStock: true,
+        isOutOfStock: false,
         variants: {
-            '100g': { price: 275, weightKg: 0.1 },
-            '250g': { price: 599, weightKg: 0.25 }
+            '100g': { price: 320, weightKg: 0.1 },
+            '250g': { price: 799, weightKg: 0.25 }
         }
     }
 };
