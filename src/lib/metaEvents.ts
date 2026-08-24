@@ -1,6 +1,6 @@
 declare global {
   interface Window {
-    fbq?: (...args: any[]) => void;
+    fbq?: (...args: unknown[]) => void;
   }
 }
 
@@ -10,8 +10,8 @@ declare global {
  */
 export async function trackMetaEvent(
   eventName: string,
-  customData?: Record<string, any>,
-  userData?: Record<string, any>,
+  customData?: Record<string, unknown>,
+  userData?: Record<string, unknown>,
   eventId?: string
 ) {
   // 1. Client-Side Meta Pixel

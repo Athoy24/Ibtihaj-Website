@@ -9,73 +9,19 @@ import { Trash2, Plus, Minus } from 'lucide-react';
 import './CheckoutForm.css';
 
 const BANGLADESH_DISTRICTS = [
-    "Dhaka",
-    "Sylhet",
-    "Bagerhat",
-    "Bandarban",
-    "Barguna",
-    "Barisal",
-    "Bhola",
-    "Bogra",
-    "Brahmanbaria",
-    "Chandpur",
-    "Chapainawabganj",
-    "Chittagong",
-    "Chuadanga",
-    "Comilla",
-    "Cox's Bazar",
-    "Dinajpur",
-    "Faridpur",
-    "Feni",
-    "Gaibandha",
-    "Gazipur",
-    "Gopalganj",
-    "Habiganj",
-    "Jamalpur",
-    "Jessore",
-    "Jhalokati",
-    "Jhenaidah",
-    "Joypurhat",
-    "Khagrachhari",
-    "Khulna",
-    "Kishorganj",
-    "Kurigram",
-    "Kushtia",
-    "Lakshmipur",
-    "Lalmonirhat",
-    "Madaripur",
-    "Magura",
-    "Manikganj",
-    "Meherpur",
-    "Moulvibazar",
-    "Munshiganj",
-    "Mymensingh",
-    "Naogaon",
-    "Narail",
-    "Narayanganj",
-    "Narsingdi",
-    "Natore",
-    "Netrokona",
-    "Nilphamari",
-    "Noakhali",
-    "Pabna",
-    "Panchagarh",
-    "Patuakhali",
-    "Pirojpur",
-    "Rajbari",
-    "Rajshahi",
-    "Rangamati",
-    "Rangpur",
-    "Satkhira",
-    "Shariatpur",
-    "Sherpur",
-    "Sirajganj",
-    "Sunamganj",
-    "Tangail",
+    "Dhaka", "Sylhet", "Bagerhat", "Bandarban", "Barguna", "Barisal", "Bhola", "Bogra",
+    "Brahmanbaria", "Chandpur", "Chapainawabganj", "Chittagong", "Chuadanga", "Comilla",
+    "Cox's Bazar", "Dinajpur", "Faridpur", "Feni", "Gaibandha", "Gazipur", "Gopalganj",
+    "Habiganj", "Jamalpur", "Jessore", "Jhalokati", "Jhenaidah", "Joypurhat", "Khagrachhari",
+    "Khulna", "Kishorganj", "Kurigram", "Kushtia", "Lakshmipur", "Lalmonirhat", "Madaripur",
+    "Magura", "Manikganj", "Meherpur", "Moulvibazar", "Munshiganj", "Mymensingh", "Naogaon",
+    "Narail", "Narayanganj", "Narsingdi", "Natore", "Netrokona", "Nilphamari", "Noakhali",
+    "Pabna", "Panchagarh", "Patuakhali", "Pirojpur", "Rajbari", "Rajshahi", "Rangamati",
+    "Rangpur", "Satkhira", "Shariatpur", "Sherpur", "Sirajganj", "Sunamganj", "Tangail",
     "Thakurgaon"
 ];
 
-// Helper: Calculate total cart weight in kg
+// Client calculation just for UI. Server does authoritative calculation.
 const calculateCartWeightInKg = (items) => {
     let totalGrams = 0;
     items.forEach(item => {
@@ -104,23 +50,19 @@ const calculateCartWeightInKg = (items) => {
     return totalGrams / 1000;
 };
 
-// Helper: Calculate delivery fee based on district & weight in kg
 const calculateDeliveryFee = (district, weightKg) => {
     if (!district || !district.trim()) {
         return { totalFee: 0, baseFee: 0, extraFee: 0, weightKg, extraKg: 0, isCalculated: false };
     }
-
     const normDistrict = district.trim().toLowerCase();
     const isDhakaOrSylhet = normDistrict.includes('dhaka') || normDistrict.includes('sylhet');
     const baseFee = isDhakaOrSylhet ? 80 : 135;
-
     let extraKg = 0;
     let extraFee = 0;
     if (weightKg > 1) {
         extraKg = Math.ceil(weightKg - 1);
         extraFee = extraKg * 20;
     }
-
     return {
         totalFee: baseFee + extraFee,
         baseFee,
@@ -133,9 +75,11 @@ const calculateDeliveryFee = (district, weightKg) => {
 };
 
 const CheckoutForm = () => {
-    const { cartItems, cartTotal, cartSubtotal, discount, updateQuantity, removeFromCart, clearCart } = useCart();
+    const { cartItems, cartTotal, cartSubtotal, updateQuantity, removeFromCart, clearCart } = useCart();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [apiError, setApiError] = useState(null);
+    const [idempotencyKey, setIdempotencyKey] = useState('');
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -143,13 +87,15 @@ const CheckoutForm = () => {
         phone: '',
         district: '',
         address: '',
-        instructions: ''
+        instructions: '',
+        website: '' // Honeypot field
     });
 
     const [errors, setErrors] = useState({});
 
-    // Track InitiateCheckout on page mount
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIdempotencyKey(crypto.randomUUID());
         if (cartItems.length > 0) {
             trackMetaEvent('InitiateCheckout', {
                 content_category: 'Tea',
@@ -158,7 +104,7 @@ const CheckoutForm = () => {
                 currency: 'BDT'
             });
         }
-    }, []);
+    }, [cartItems.length, cartTotal]);
 
     const cartWeightKg = calculateCartWeightInKg(cartItems);
     const deliveryFeeInfo = calculateDeliveryFee(formData.district, cartWeightKg);
@@ -170,149 +116,83 @@ const CheckoutForm = () => {
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
+        setApiError(null);
     };
 
     const validate = () => {
         const newErrors = {};
-        if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
-        if (!formData.email.trim()) newErrors.email = 'Email is required';
-        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
-        if (!formData.phone.trim()) newErrors.phone = 'Phone Number is required';
-        if (!formData.district.trim()) newErrors.district = 'Please select or enter your District';
-        if (!formData.address.trim()) newErrors.address = 'Street Address is required';
+        if (!formData.fullName.trim() || formData.fullName.length < 2) newErrors.fullName = 'Full Name is required';
+        const emailTrimmed = formData.email.trim();
+        if (emailTrimmed && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailTrimmed)) {
+            newErrors.email = 'Enter a valid email address, or leave this field blank.';
+        }
+        if (!formData.phone.trim()) {
+            newErrors.phone = 'Phone Number is required';
+        } else if (!/^(?:\+8801|8801|01)\d{9}$/.test(formData.phone)) {
+            newErrors.phone = 'Enter a valid Bangladesh mobile number: +8801XXXXXXXXX, 8801XXXXXXXXX, or 01XXXXXXXXX.';
+        }
+        if (!formData.district.trim() || !BANGLADESH_DISTRICTS.includes(formData.district)) newErrors.district = 'Valid District is required';
+        if (!formData.address.trim() || formData.address.length < 5) newErrors.address = 'Detailed Street Address is required';
         return newErrors;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setApiError(null);
+        
         const newErrors = validate();
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
 
+        if (cartItems.length === 0 || !formData.district.trim()) {
+            return;
+        }
+
         setIsSubmitting(true);
 
-        const orderId = `ORD-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
-
-        const orderDetails = {
-            orderId,
-            date: new Date().toLocaleDateString(),
-            customer: formData,
-            items: cartItems,
-            subtotal: cartSubtotal,
-            discount,
-            deliveryFee: deliveryFeeInfo.totalFee,
-            total: grandTotal,
-            weightKg: cartWeightKg,
-            status: 'Pending'
-        };
-
-        // Format Message for Telegram/WhatsApp
-        const itemsList = cartItems
-            .map(item => `- ${item.name} (${item.size}) x ${item.quantity}: ৳${item.price * item.quantity}`)
-            .join('\n');
-
-        const message = `
-📦 *New Order Received!*
-🆔 Order ID: \`${orderId}\`
-📅 Date: ${orderDetails.date}
-
-👤 *Customer Details:*
-Name: ${formData.fullName}
-Phone: ${formData.phone}
-Email: ${formData.email}
-District: ${formData.district}
-Address: ${formData.address}
-
-🛒 *Order Items:*
-${itemsList}
-
-⚖️ *Total Weight:* ${cartWeightKg.toFixed(2)} kg
-🚚 *Delivery Fee:* ৳${deliveryFeeInfo.totalFee} (${deliveryFeeInfo.isDhakaOrSylhet ? 'Inside Dhaka/Sylhet' : 'Outside Dhaka/Sylhet'}${deliveryFeeInfo.extraKg > 0 ? ` + ৳${deliveryFeeInfo.extraFee} extra weight` : ''})
-💰 *Grand Total:* ৳${grandTotal}
-
-📝 *Instructions:*
-${formData.instructions || 'None'}
-        `.trim();
-
         try {
-            // Send Meta Pixel & CAPI Purchase Event
+            const response = await fetch('/api/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customer: formData,
+                    items: cartItems.map(i => ({ id: i.id, size: i.size, quantity: i.quantity })), // Do NOT send client totals/prices
+                    idempotencyKey,
+                    honeypot: formData.website
+                })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                setApiError(errData.error || 'Failed to place order.');
+                setIsSubmitting(false);
+                return;
+            }
+
+            const data = await response.json();
+
+            // Track purchase
             trackMetaEvent('Purchase', {
                 value: grandTotal,
                 currency: 'BDT',
                 content_type: 'product',
                 num_items: cartItems.length,
-                order_id: orderId
+                order_id: data.orderId
             }, {
                 em: formData.email,
                 ph: formData.phone,
                 fn: formData.fullName
-            }, orderId);
-
-            const promises = [];
-
-            // Telegram API
-            const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-            const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
-
-            if (botToken && chatId) {
-                const telegramPromise = fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: message,
-                        parse_mode: 'Markdown'
-                    }),
-                }).then(res => {
-                    if (!res.ok) throw new Error('Telegram API failed');
-                    console.log('Order sent to Telegram successfully');
-                }).catch(err => console.error('Telegram Error:', err));
-                promises.push(telegramPromise);
-            }
-
-            // Google Sheets Integration
-            const sheetUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL;
-            if (sheetUrl) {
-                const sheetData = {
-                    orderId,
-                    date: orderDetails.date,
-                    customerName: formData.fullName,
-                    phone: formData.phone,
-                    email: formData.email,
-                    district: formData.district,
-                    address: formData.address,
-                    itemsSummary: cartItems.map(item => `${item.name} (${item.size}) x ${item.quantity}`).join(', '),
-                    weightKg: cartWeightKg.toFixed(2),
-                    subtotal: cartSubtotal,
-                    deliveryFee: deliveryFeeInfo.totalFee,
-                    total: grandTotal
-                };
-
-                const sheetPromise = fetch(sheetUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(sheetData)
-                }).then(() => {
-                    console.log('Order sent to Google Sheets successfully');
-                }).catch(err => console.error('Google Sheet Error:', err));
-                promises.push(sheetPromise);
-            }
-
-            await Promise.race([
-                Promise.allSettled(promises),
-                new Promise(resolve => setTimeout(resolve, 4000))
-            ]);
+            }, data.orderId);
 
             clearCart();
+            // Redirect without any sensitive tokens in the URL
             router.push('/order-confirmation');
-
+            
         } catch (error) {
-            console.error('Failed to process order:', error);
-            alert('There was an issue placing your order. Please try again.');
-        } finally {
+            console.error('Submission error:', error);
+            setApiError('A network error occurred. Please try again.');
             setIsSubmitting(false);
         }
     };
@@ -328,15 +208,37 @@ ${formData.instructions || 'None'}
         );
     }
 
+    const isPlaceOrderDisabled = isSubmitting || !formData.district.trim() || cartItems.length === 0;
+
     return (
         <div className="checkout-container">
             <h1 className="page-title">Complete Your Order</h1>
 
-            <form className="checkout-form-container" onSubmit={handleSubmit}>
+            <form className="checkout-form-container" onSubmit={handleSubmit} method="POST">
                 <div className="checkout-grid">
                     {/* Left Column: Shipping & Contact Form */}
                     <div className="checkout-form-section">
                         <h3>Shipping & Contact Details</h3>
+
+                        {apiError && (
+                            <div className="alert alert-error" role="alert" aria-live="assertive">
+                                {apiError}
+                            </div>
+                        )}
+
+                        {/* Honeypot field (hidden from view) */}
+                        <div style={{ display: 'none' }} aria-hidden="true">
+                            <label htmlFor="website">Website (Leave blank)</label>
+                            <input
+                                id="website"
+                                type="text"
+                                name="website"
+                                value={formData.website}
+                                onChange={handleChange}
+                                tabIndex="-1"
+                                autoComplete="off"
+                            />
+                        </div>
 
                         <div className="form-group">
                             <label htmlFor="fullName">Full Name *</label>
@@ -347,9 +249,12 @@ ${formData.instructions || 'None'}
                                 placeholder="Enter your full name"
                                 value={formData.fullName}
                                 onChange={handleChange}
+                                required
+                                autoComplete="name"
+                                aria-invalid={!!errors.fullName}
                                 className={errors.fullName ? 'error' : ''}
                             />
-                            {errors.fullName && <span className="error-msg">{errors.fullName}</span>}
+                            {errors.fullName && <span className="error-msg" role="alert">{errors.fullName}</span>}
                         </div>
 
                         <div className="form-row">
@@ -362,12 +267,16 @@ ${formData.instructions || 'None'}
                                     placeholder="01XXXXXXXXX"
                                     value={formData.phone}
                                     onChange={handleChange}
+                                    required
+                                    autoComplete="tel"
+                                    aria-invalid={!!errors.phone}
+                                    aria-describedby={errors.phone ? "phone-error" : undefined}
                                     className={errors.phone ? 'error' : ''}
                                 />
-                                {errors.phone && <span className="error-msg">{errors.phone}</span>}
+                                {errors.phone && <span id="phone-error" className="error-msg" role="alert">{errors.phone}</span>}
                             </div>
                             <div className="form-group">
-                                <label htmlFor="email">Email Address *</label>
+                                <label htmlFor="email">Email Address (Optional)</label>
                                 <input
                                     id="email"
                                     type="email"
@@ -375,9 +284,12 @@ ${formData.instructions || 'None'}
                                     placeholder="example@mail.com"
                                     value={formData.email}
                                     onChange={handleChange}
+                                    autoComplete="email"
+                                    aria-invalid={!!errors.email}
+                                    aria-describedby={errors.email ? "email-error" : undefined}
                                     className={errors.email ? 'error' : ''}
                                 />
-                                {errors.email && <span className="error-msg">{errors.email}</span>}
+                                {errors.email && <span id="email-error" className="error-msg" role="alert">{errors.email}</span>}
                             </div>
                         </div>
 
@@ -389,6 +301,9 @@ ${formData.instructions || 'None'}
                                     name="district"
                                     value={formData.district}
                                     onChange={handleChange}
+                                    required
+                                    autoComplete="address-level1"
+                                    aria-invalid={!!errors.district}
                                     className={errors.district ? 'error' : ''}
                                 >
                                     <option value="">-- Select District --</option>
@@ -398,7 +313,7 @@ ${formData.instructions || 'None'}
                                         </option>
                                     ))}
                                 </select>
-                                {errors.district && <span className="error-msg">{errors.district}</span>}
+                                {errors.district && <span className="error-msg" role="alert">{errors.district}</span>}
                             </div>
 
                             <div className="form-group">
@@ -410,9 +325,12 @@ ${formData.instructions || 'None'}
                                     placeholder="House, Road, Thana/Upazila"
                                     value={formData.address}
                                     onChange={handleChange}
+                                    required
+                                    autoComplete="street-address"
+                                    aria-invalid={!!errors.address}
                                     className={errors.address ? 'error' : ''}
                                 />
-                                {errors.address && <span className="error-msg">{errors.address}</span>}
+                                {errors.address && <span className="error-msg" role="alert">{errors.address}</span>}
                             </div>
                         </div>
 
@@ -438,7 +356,7 @@ ${formData.instructions || 'None'}
                                 <div key={item.cartId} className="summary-item">
                                     <div className="item-info">
                                         <span className="item-name">{item.name}</span>
-                                        <span className="item-meta">{item.size} × ৳{item.price}</span>
+                                        <span className="item-meta">{item.size}</span>
                                     </div>
                                     <div className="item-controls">
                                         <div className="qty-buttons">
@@ -458,7 +376,6 @@ ${formData.instructions || 'None'}
                                                 <Plus size={12} />
                                             </button>
                                         </div>
-                                        <span className="item-total">৳ {item.price * item.quantity}</span>
                                         <button
                                             type="button"
                                             onClick={() => removeFromCart(item.cartId)}
@@ -478,39 +395,26 @@ ${formData.instructions || 'None'}
                                 <span>৳ {cartSubtotal}</span>
                             </div>
 
-                            {discount > 0 && (
-                                <div className="summary-row discount">
-                                    <span>Discount</span>
-                                    <span>- ৳ {discount}</span>
-                                </div>
-                            )}
-
-                            <div className="summary-row">
-                                <span>Cart Weight</span>
-                                <span>{cartWeightKg.toFixed(2)} kg</span>
-                            </div>
-
                             <div className="summary-row shipping-row">
                                 <span>Shipping Fee</span>
                                 <span>
                                     {!deliveryFeeInfo.isCalculated ? (
-                                        <em className="text-muted">Select District</em>
+                                        <em className="text-muted">Select district</em>
                                     ) : (
                                         `৳ ${deliveryFeeInfo.totalFee}`
                                     )}
                                 </span>
                             </div>
 
-                            {deliveryFeeInfo.isCalculated && (
-                                <div className="shipping-note">
-                                    {deliveryFeeInfo.isDhakaOrSylhet ? 'Inside Dhaka/Sylhet (৳80 base)' : 'Outside Dhaka/Sylhet (৳135 base)'}
-                                    {deliveryFeeInfo.extraKg > 0 && ` + ৳${deliveryFeeInfo.extraFee} (+${deliveryFeeInfo.extraKg}kg extra weight)`}
-                                </div>
-                            )}
-
                             <div className="summary-row total">
                                 <span>Grand Total</span>
-                                <span>৳ {grandTotal}</span>
+                                <span>
+                                    {!deliveryFeeInfo.isCalculated ? (
+                                        <em className="text-muted">Pending</em>
+                                    ) : (
+                                        `৳ ${grandTotal}`
+                                    )}
+                                </span>
                             </div>
                         </div>
 
@@ -524,9 +428,9 @@ ${formData.instructions || 'None'}
                         <button
                             type="submit"
                             className="btn btn-accent place-order-btn"
-                            disabled={isSubmitting}
+                            disabled={isPlaceOrderDisabled}
                         >
-                            {isSubmitting ? 'Processing Order...' : `Place Order (৳${grandTotal})`}
+                            {isSubmitting ? 'Processing Order...' : (!deliveryFeeInfo.isCalculated ? 'Select district to continue' : `Place Order (৳${grandTotal})`)}
                         </button>
                     </div>
                 </div>

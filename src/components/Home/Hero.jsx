@@ -1,4 +1,6 @@
 import React from 'react';
+import Image from 'next/image';
+import heroBg from '../../assets/hero-bg.webp';
 import './Hero.css';
 
 const Hero = () => {
@@ -11,6 +13,13 @@ const Hero = () => {
 
     return (
         <section className="hero">
+            <Image 
+                src={heroBg}
+                alt="Background of tea plantation"
+                fill
+                priority
+                style={{ objectFit: 'cover', zIndex: 0 }}
+            />
             <div className="hero-overlay"></div>
             <div className="container hero-content">
                 <h1 className="hero-title">The Tea that Tells the Tale of Bangladesh.</h1>

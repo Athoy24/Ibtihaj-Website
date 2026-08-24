@@ -4,7 +4,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const CartContext = createContext();
 
-// eslint-disable-next-line react-refresh/only-export-components
+// eslint-disable-next-line
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
@@ -14,6 +14,7 @@ export const CartProvider = ({ children }) => {
         if (typeof window !== 'undefined') {
             const savedCart = localStorage.getItem('ibtihaj_cart');
             if (savedCart) {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setCartItems(JSON.parse(savedCart));
             }
         }
@@ -21,7 +22,6 @@ export const CartProvider = ({ children }) => {
 
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [couponCode, setCouponCode] = useState('');
-    const [discount, setDiscount] = useState(0);
     const [couponError, setCouponError] = useState('');
 
     useEffect(() => {
@@ -63,7 +63,6 @@ export const CartProvider = ({ children }) => {
     const clearCart = () => {
         setCartItems([]);
         setCouponCode('');
-        setDiscount(0);
         setCouponError('');
     };
 
@@ -79,13 +78,11 @@ export const CartProvider = ({ children }) => {
         } else {
             setCouponError('Invalid coupon code');
             setCouponCode('');
-            setDiscount(0);
         }
     };
 
     const removeCoupon = () => {
         setCouponCode('');
-        setDiscount(0);
         setCouponError('');
     };
 

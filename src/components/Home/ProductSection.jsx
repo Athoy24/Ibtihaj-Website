@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { MessageCircle, Phone, ClipboardList } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import './ProductSection.css';
-import signature200gImg from '../../assets/200 gm Packaging.png';
-import signature500gImg from '../../assets/500 gm Packaging.png';
-import greenteaImg from '../../assets/Green Tea packaging.png';
+import signature200gImg from '../../assets/200 gm Packaging.webp';
+import signature500gImg from '../../assets/500 gm Packaging.webp';
+import greenteaImg from '../../assets/Green Tea packaging.webp';
 
 const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
@@ -144,17 +144,17 @@ const ProductSection = () => {
         {
             id: 'green-tea',
             name: 'Ibtihaj Premium Green Tea',
-            isOutOfStock: true,
-            description: 'Refresh your senses with our organic Green Tea, rich in antioxidants and pure flavor. Handcrafted to preserve the highest quality of tea nutrients, it delivers a smooth taste and natural energy boost throughout your day.',
+            isOutOfStock: false,
+            description: 'Refresh your senses with our Premium Green Tea, rich in antioxidants and pure flavor. Handcrafted to preserve the highest quality of tea nutrients, it delivers a smooth taste and natural energy boost throughout your day.',
             isBestSeller: false,
             features: [
-                '🍵 100% Organic green tea leaves',
+                '🍵 100% Premium green tea leaves',
                 '💪 Rich in antioxidants & natural nutrients',
                 '✨ Mild, smooth, and refreshingly clean taste'
             ],
             variants: {
-                '100g': { price: 275, originalPrice: 300, image: greenteaImg.src },
-                '250g': { price: 599, originalPrice: 650, image: greenteaImg.src }
+                '100g': { price: 320, originalPrice: 400, image: greenteaImg.src },
+                '250g': { price: 799, originalPrice: 950, image: greenteaImg.src }
             }
         }
     ];
@@ -205,7 +205,7 @@ const ProductSection = () => {
                             </button>
                             {activeAccordion === 2 && (
                                 <div className="accordion-content">
-                                    <p>Store in a cool, dry place in an airtight container to keep the aroma intact. Free shipping inside Bangladesh for orders exceeding ৳1000. Delivery time: 2-3 business days.</p>
+                                    <p>Store in a cool, dry place in an airtight container to keep the aroma intact. Delivery time: 2-3 business days.</p>
                                 </div>
                             )}
                         </div>

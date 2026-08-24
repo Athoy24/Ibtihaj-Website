@@ -4,12 +4,11 @@
     min-height: 600px;
     display: flex;
     align-items: center;
-    background-image: url('../../assets/hero-bg.jpg');
-    /* Placeholder Tea Image */
-    background-size: cover;
-    background-position: center;
+    background-color: #2c2c2c;
+    /* Lightweight placeholder color matching dark theme */
     color: var(--color-white);
     text-align: center;
+    overflow: hidden;
 }
 
 .hero-overlay {

@@ -10,7 +10,7 @@ const BrandStory = () => {
                         <h2>Our Passion, Your Perfect Cup</h2>
                         <p>
                             At Ibtihaj, we believe that every cup of tea tells a story. Our journey began with a simple vision:
-                            to bring the finest black tea from Bangladesh's most prestigious gardens to tea lovers around the world.
+                            to bring the finest black tea from Bangladesh&apos;s most prestigious gardens to tea lovers around the world.
                             We spend years sourcing the perfect single-origin leaves from the finest gardens, ensuring every batch
                             meets our exacting standards.
                         </p>
@@ -24,7 +24,7 @@ const BrandStory = () => {
                             Most black teas are mass-produced, resulting in a bitter, flat taste. Ibtihaj is different.
                             We use only the finest signature flush leaves, hand-picked at their peak. The result is a tea with
                             exceptional flavor, rich aroma, and a smooth finish that makes every sip special. Once you taste Ibtihaj,
-                            you'll never go back to ordinary tea.
+                            you&apos;ll never go back to ordinary tea.
                         </p>
                     </div>
                 </div>

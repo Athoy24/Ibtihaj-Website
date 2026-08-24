@@ -68,10 +68,10 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true, data: result });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error handling Meta CAPI route:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error', message: error?.message || 'Unknown error' },
+      { error: 'Internal Server Error', message: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
