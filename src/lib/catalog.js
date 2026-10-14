@@ -3,8 +3,8 @@ export const PRODUCT_CATALOG = {
         name: 'Ibtihaj Signature Flush Tea',
         isOutOfStock: false,
         variants: {
-            '200g': { price: 159, weightKg: 0.2 },
-            '500g': { price: 399, weightKg: 0.5 }
+            '200g': { price: 179, weightKg: 0.2 },
+            '500g': { price: 449, weightKg: 0.5 }
         }
     },
     'green-tea': {

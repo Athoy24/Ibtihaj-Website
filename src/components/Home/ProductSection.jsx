@@ -137,8 +137,8 @@ const ProductSection = () => {
                 '🌳 Sourced from top quality gardens of Sreemangal'
             ],
             variants: {
-                '200g': { price: 159, originalPrice: 199, image: signature200gImg.src },
-                '500g': { price: 399, originalPrice: 499, image: signature500gImg.src }
+                '200g': { price: 179, originalPrice: 199, image: signature200gImg.src },
+                '500g': { price: 449, originalPrice: 499, image: signature500gImg.src }
             }
         },
         {
